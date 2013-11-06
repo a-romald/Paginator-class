@@ -51,8 +51,8 @@ class Paginator
 	 * @param numeric  $_instance sets the instance for the GET parameter
 	 */
     public function __construct($perPage, $instance = 'page'){
+        $this->perPage = $perPage;
         $this->instance = $instance;
-		$this->perPage = $perPage;
         $this->set_instance();
         $this->set_path();
     }
@@ -77,19 +77,17 @@ class Paginator
      */
      private function set_path() {
             $url = $_SERVER['REQUEST_URI'];
-            $pos1 = strpos($url, $this->instance);
+            $pos1 = strpos($url, '?');
             if ($pos1) {
-                $aux = $pos1 - 1;
-                $url = substr($url, 0, $aux);
+                $url = substr($url, 0, $pos1);
             }
-            $pos2 = strpos($url, '?');
-            $this->path = ($pos2 === false) ? $url.'?'.$this->instance : $url.'&'.$this->instance;
+            $this->path = $url;
      }
      
     /**
 	 * set_total
      * 
-     * Setter. Set total number of records
+     * Setter. Set total number of items
 	 *
 	 * collect a numberic value and assigns it to the totalRows
 	 *
@@ -107,6 +105,7 @@ class Paginator
 	 * @var numeric
 	*/
     private function set_total_pages() {
+        // Находим общее число страниц
         $this->totalPages = (($this->totalRows - 1) / $this->perPage) + 1;
         $this->totalPages =  intval($this->totalPages);
         if($this->page > $this->totalPages) $this->page = $this->totalPages;
@@ -129,6 +128,7 @@ class Paginator
 	 * @return string
 	*/
     public function set_limit() {
+        // следует выводить сообщения
         return "LIMIT ".$this->set_start().", $this->perPage";
     }
     
@@ -142,28 +142,29 @@ class Paginator
     public function get_links($ext=null) {
         $this->set_total_pages();
         // Check if needed back-arrows
-        if ($this->page != 1) $pervpage = '<a href='.$this->path.'=1'.$ext.'>First</a> <a href='.$this->path.'='. ($this->page - 1) .$ext.'> << </a> ';
+        if ($this->page != 1) $pervpage = '<a href='.$this->path.'?'.$this->instance.'=1'.$ext.'>First</a> <a href='.$this->path.'?'.$this->instance.'='. ($this->page - 1) .$ext.'> << </a> ';
         //  Check if needed forward-arrows
-        if ($this->page != $this->totalPages) $nextpage = ' <a href='.$this->path.'='. ($this->page + 1) .$ext.'> >> </a> <a href='.$this->path.'='.$this->totalPages.$ext.'>Last</a>';
+        if ($this->page != $this->totalPages) $nextpage = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page + 1) .$ext.'> >> </a> <a href='.$this->path.'?'.$this->instance.'='.$this->totalPages.$ext.'>Last</a>';
         
         // Find five closest pages if they exist
-        if($this->page - 5 > 0) $page5left = ' <a href='.$this->path.'='. ($this->page - 5) .$ext.'>'. ($this->page - 5) .'</a> ';
-        if($this->page - 4 > 0) $page4left = ' <a href='.$this->path.'='. ($this->page - 4) .$ext.'>'. ($this->page - 4) .'</a> ';
-        if($this->page - 3 > 0) $page3left = ' <a href='.$this->path.'='. ($this->page - 3) .$ext.'>'. ($this->page - 3) .'</a> ';
-        if($this->page - 2 > 0) $page2left = ' <a href='.$this->path.'='. ($this->page - 2) .$ext.'>'. ($this->page - 2) .'</a> ';
-        if($this->page - 1 > 0) $page1left = '<a href='.$this->path.'='. ($this->page - 1) .$ext.'>'. ($this->page - 1) .'</a> ';
+        if($this->page - 5 > 0) $page5left = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page - 5) .$ext.'>'. ($this->page - 5) .'</a> ';
+        if($this->page - 4 > 0) $page4left = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page - 4) .$ext.'>'. ($this->page - 4) .'</a> ';
+        if($this->page - 3 > 0) $page3left = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page - 3) .$ext.'>'. ($this->page - 3) .'</a> ';
+        if($this->page - 2 > 0) $page2left = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page - 2) .$ext.'>'. ($this->page - 2) .'</a> ';
+        if($this->page - 1 > 0) $page1left = '<a href='.$this->path.'?'.$this->instance.'='. ($this->page - 1) .$ext.'>'. ($this->page - 1) .'</a> ';
         
-        if($this->page + 5 <= $this->totalPages) $page5right = ' <a href='.$this->path.'='. ($this->page + 5) .$ext.'>'. ($this->page + 5) .'</a>';
-        if($this->page + 4 <= $this->totalPages) $page4right = ' <a href='.$this->path.'='. ($this->page + 4) .$ext.'>'. ($this->page + 4) .'</a>';
-        if($this->page + 3 <= $this->totalPages) $page3right = ' <a href='.$this->path.'='. ($this->page + 3) .$ext.'>'. ($this->page + 3) .'</a>';
-        if($this->page + 2 <= $this->totalPages) $page2right = ' <a href='.$this->path.'='. ($this->page + 2) .$ext.'>'. ($this->page + 2) .'</a>';
-        if($this->page + 1 <= $this->totalPages) $page1right = ' <a href='.$this->path.'='. ($this->page + 1) .$ext.'>'. ($this->page + 1) .'</a>';
+        if($this->page + 5 <= $this->totalPages) $page5right = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page + 5) .$ext.'>'. ($this->page + 5) .'</a>';
+        if($this->page + 4 <= $this->totalPages) $page4right = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page + 4) .$ext.'>'. ($this->page + 4) .'</a>';
+        if($this->page + 3 <= $this->totalPages) $page3right = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page + 3) .$ext.'>'. ($this->page + 3) .'</a>';
+        if($this->page + 2 <= $this->totalPages) $page2right = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page + 2) .$ext.'>'. ($this->page + 2) .'</a>';
+        if($this->page + 1 <= $this->totalPages) $page1right = ' <a href='.$this->path.'?'.$this->instance.'='. ($this->page + 1) .$ext.'>'. ($this->page + 1) .'</a>';
         
         // Output menu links if there are more than one page
         
         if ($this->totalPages > 1)
         {
         //error_reporting(E_ALL & ~E_NOTICE);
+        error_reporting(0);
         echo "<div class=\"pstrnav\">";
         echo $pervpage.$page5left.$page4left.$page3left.$page2left.$page1left.'<b>'.$this->page.'</b>'.$page1right.$page2right.$page3right.$page4right.$page5right.$nextpage;
         echo "</div>";
