@@ -50,7 +50,7 @@ class Paginator
      * @param numeric  $_perPage  sets the number of iteems per page
 	 * @param numeric  $_instance sets the instance for the GET parameter
 	 */
-    public function __construct($perPage, $instance = 'page'){
+    public function __construct($perPage=10, $instance = 'page'){
         $this->perPage = $perPage;
         $this->instance = $instance;
         $this->set_instance();
@@ -117,7 +117,7 @@ class Paginator
 	 * creates the starting point for limiting the dataset
 	 * @return numeric
 	*/
-	private function set_start(){
+	public function set_start(){
 		return ($this->page * $this->perPage) - $this->perPage;
 	}
     
